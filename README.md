@@ -11,4 +11,4 @@ Initially, it will only return functions, since that's the first thing I'm creat
 
 ## System Architecture
 
-![Initial system design](./system design.svg)
+![Initial system design](./system_design.svg)
