@@ -37,3 +37,4 @@ Metadata that we might want to have available for API results:
 Open questions:
 
 - Do we actually want to return data structures like what's currently used for the parsons problems web app? ie, with code as an array of objects of the form `[{"line_number":3, line_content: "    return computedValue"}...]`? It could be that allowing clients to do that parsing if they want to is cleaner and couples the data less to a particular expected usage (like parsons problems). The biggest problem is I have absolutely no idea how people would want to actually use this, so I might as well just return a very general data structure and then iterate based on actual feedback, if there is any.
+- Do we want to also grab tests, and present them? If so, we probably want to add a `test: true` field for the metadata, probably defaulting to _not_ providing functions from test files.
