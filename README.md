@@ -34,6 +34,43 @@ Metadata that we might want to have available for API results:
 - date retrieved
 - language of the function
 
+## Data model
+
+The database will have the following tables:
+
+1) language
+2) source repository
+3) code
+
+### language
+
+```
+ID | language
+0  | python
+1  | golang
+2  | javascript
+3  | typescript
+```
+
+### source repository
+
+```
+ID | URL
+0  | https://github.com/owner/repo_name1
+1  | https://github.com/owner/repo_name2
+2  | https://github.com/owner/repo_name3
+...
+```
+
+### code
+
+```
+ID | language | repo | number_of_lines | code
+0  | 1        | 4    | 8               | [{"line_number": 1, "line_content": "function get(req, res, next) {"}, ...]
+...
+```
+
+
 Open questions:
 
 - Do we actually want to return data structures like what's currently used for the parsons problems web app? ie, with code as an array of objects of the form `[{"line_number":3, line_content: "    return computedValue"}...]`? It could be that allowing clients to do that parsing if they want to is cleaner and couples the data less to a particular expected usage (like parsons problems). The biggest problem is I have absolutely no idea how people would want to actually use this, so I might as well just return a very general data structure and then iterate based on actual feedback, if there is any.
