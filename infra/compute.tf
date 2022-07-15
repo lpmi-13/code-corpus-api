@@ -12,3 +12,15 @@ resource "aws_lb" "code-corpus-alb" {
     Environment = "code-corpus-api"
   }
 }
+
+resource "aws_db_instance" "api-datastore" {
+  allocated_storage    = 20
+  allow_major_version_upgrade = false
+  engine               = "postgresql"
+  engine_version       = "14"
+  instance_class       = "db.t4g.micro"
+  db_name              = "api-datastore"
+  username             = "CHANGE_ME"
+  password             = "CHANGE_ME"
+  skip_final_snapshot  = true
+}
