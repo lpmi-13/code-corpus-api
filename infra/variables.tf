@@ -15,5 +15,5 @@ variable "db_password" {
 
 variable "public_ip" {
   description = "the public IP to allow access into the bastion host"
-  default = "PUBLIC_IP_TO_CHANGE"
+  default     = "PUBLIC_IP_TO_CHANGE"
 }

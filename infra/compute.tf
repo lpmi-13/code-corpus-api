@@ -28,28 +28,28 @@ resource "aws_db_instance" "api-datastore" {
   db_subnet_group_name        = aws_db_subnet_group.db_subnet.name
   username                    = var.db_username
   password                    = var.db_password
+  vpc_security_group_ids      = [aws_security_group.rds-instance.id]
   skip_final_snapshot         = true
 }
 
 resource "aws_network_interface" "bastion-interface" {
-  subnet_id = aws_subnet.public_subnet_a.id
+  subnet_id       = aws_subnet.public_subnet_a.id
   security_groups = [aws_security_group.bastion-host.id]
-  private_ip = "10.0.10.1"
 
   # so we can tunnel the ssh connection
   source_dest_check = false
 }
 
 resource "aws_key_pair" "bastion-keys" {
-  key_name = "bastion-keys"
+  key_name   = "bastion-keys"
   public_key = file("./terraform.ed25519.pub")
 }
 
 # this is the bastion host to connect to the database and seed the data
 resource "aws_instance" "bastion-host" {
-  ami           = "ami-079e64f0f92b31250"
-  instance_type = "t4g.nano"
-  key_name = aws_key_pair.bastion-keys.key_name
+  ami               = "ami-079e64f0f92b31250"
+  instance_type     = "t4g.nano"
+  key_name          = aws_key_pair.bastion-keys.key_name
   availability_zone = "eu-west-1a"
 
   network_interface {

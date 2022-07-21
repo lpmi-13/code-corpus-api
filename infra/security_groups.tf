@@ -17,7 +17,7 @@ resource "aws_security_group" "load-balancer" {
     }
   ]
 
-
+  # we might not even need this egress...
   egress = [
     {
       description      = "let us free!"
@@ -45,11 +45,11 @@ resource "aws_security_group" "bastion-host" {
   depends_on  = [aws_vpc.code-corpus-api]
   ingress = [
     {
-      description      = "let requests hit the load balancer"
-      from_port        = "22"
-      to_port          = "22"
-      protocol         = "tcp"
-      security_groups  = []
+      description     = "let requests hit the load balancer"
+      from_port       = "22"
+      to_port         = "22"
+      protocol        = "tcp"
+      security_groups = []
       # make sure you run the ./set_public_ip.sh script or this won't resolve
       cidr_blocks      = ["${var.public_ip}/32"]
       ipv6_cidr_blocks = null
@@ -58,8 +58,49 @@ resource "aws_security_group" "bastion-host" {
     }
   ]
 
+  # to install the psql cli tool
+  egress = [
+    {
+      description      = "bastion wants to update"
+      from_port        = "0"
+      to_port          = "0"
+      protocol         = "-1"
+      security_groups  = []
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+      prefix_list_ids  = []
+      self             = "true"
+    }
+  ]
+
   tags = {
     Name        = "bastion-access"
+    Environment = "code-corpus-api"
+  }
+}
+
+
+resource "aws_security_group" "rds-instance" {
+  name        = "code-corpus-rds"
+  description = "Allow access from the bastion host to the database"
+  vpc_id      = aws_vpc.code-corpus-api.id
+  depends_on  = [aws_vpc.code-corpus-api]
+  ingress = [
+    {
+      description      = "let the bastion talk to RDS"
+      from_port        = "5432"
+      to_port          = "5432"
+      protocol         = "tcp"
+      security_groups  = []
+      cidr_blocks      = ["${aws_instance.bastion-host.private_ip}/32"]
+      ipv6_cidr_blocks = null
+      prefix_list_ids  = []
+      self             = "true"
+    }
+  ]
+
+  tags = {
+    Name        = "RDS access"
     Environment = "code-corpus-api"
   }
 }
