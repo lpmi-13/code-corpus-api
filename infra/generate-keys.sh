@@ -1,0 +1,1 @@
+ssh-keygen -t ed25519 -o -a 100 -f ./terraform.ed25519 -N ""
