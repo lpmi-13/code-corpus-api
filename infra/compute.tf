@@ -29,6 +29,8 @@ resource "aws_db_instance" "api-datastore" {
   username                    = var.db_username
   password                    = var.db_password
   vpc_security_group_ids      = [aws_security_group.rds-instance.id]
+  # when you're ready to go to production, uncomment this
+  # deletion_protection         = true
   skip_final_snapshot         = true
 }
 
