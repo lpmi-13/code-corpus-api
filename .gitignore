@@ -1,2 +1,5 @@
 .terraform
 *.ed25519*
+
+# for testing data during local dev
+postgres_data
