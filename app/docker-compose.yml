@@ -26,10 +26,6 @@ services:
     depends_on:
       - db
 
-volumes:
-  db:
-    driver: local
-
 networks:
   default:
     name: code-corpus-api
