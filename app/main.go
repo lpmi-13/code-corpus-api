@@ -13,11 +13,14 @@ func main() {
 
 	models.ConnectDatabase()
 
-	r.GET("/books", controllers.FindBooks)
-	r.POST("/books", controllers.CreateBook)
-	r.GET("/books/:id", controllers.FindBook)
-	r.PATCH("/books/:id", controllers.UpdateBook)
-	r.DELETE("/books/:id", controllers.DeleteBook)
+	// probably paginate this, so we can bring back 10 at a time,
+	// or even have the option to send the number requested via query params
+	r.GET("/functions", controllers.FindFunctions)
+
+	// we'll probably only need this for a randomly chosen function,
+	// but we might also want to pass query params to narrow down where
+	// a random function is chosen from (eg, language, length, etc)
+	r.GET("/function/:id", controllers.FindFunction)
 
 	r.Run()
 }
