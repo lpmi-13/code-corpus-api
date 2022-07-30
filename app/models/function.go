@@ -1,14 +1,15 @@
 package models
 
-type CodeSnippet struct {
-	LineNumber  uint   `json:"lineNumber"`
-	LineContent string `json:"lineContent"`
-}
+import (
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+)
 
 type Function struct {
-	ID            uint          `json:"if" gorm:"primary_key"`
-	Language      string        `json:"language"`
-	Repo          string        `json:"repo"`
-	NumberOfLines uint          `json:"numberOfLines"`
-	Code          []CodeSnippet `json:"code"`
+	gorm.Model
+	Language string `json:"language"`
+	Repo     string `json:"repo"`
+	// we proably don't care about functions with more than 255 lines
+	NumberOfLines uint8          `json:"numberOfLines"`
+	Code          datatypes.JSON `json:"code"`
 }

@@ -17,10 +17,8 @@ func main() {
 	// or even have the option to send the number requested via query params
 	r.GET("/functions", controllers.FindFunctions)
 
-	// we'll probably only need this for a randomly chosen function,
-	// but we might also want to pass query params to narrow down where
-	// a random function is chosen from (eg, language, length, etc)
-	r.GET("/function/:id", controllers.FindFunction)
+	// this is just for a random function, we'll add specific language in a bit
+	r.GET("/function", controllers.FindRandomFunction)
 
 	r.Run()
 }
