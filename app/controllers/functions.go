@@ -16,7 +16,7 @@ func FindFunctions(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": functions})
 }
 
-// find one language from a specific language
+// find one function from a specific language
 func FindRandomFunction(c *gin.Context) {
 	var count int64
 	var function models.Function
