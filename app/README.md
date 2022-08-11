@@ -24,3 +24,5 @@ the GitHub action pushes a new image to ECR, so make sure you have a repo set up
 - `AWS_SECRET_ACCESS_KEY`
 
 to your repository secrets. For these credentials, you can create an IAM user and add an inline policy that allows only pushing images to ECR.
+
+This is currently set up to only fire when there is an explicit change to any file in the `./app` directory.
