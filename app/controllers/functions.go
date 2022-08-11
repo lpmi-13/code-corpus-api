@@ -10,6 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// as a general note, we probably also want some checking about whether
+// the params passed are valid (eg, not negative or random chars),
+// and we can add tests for that first, then implement that checks
+
 // limit this to first 10 functions per language
 func FindFunctions(c *gin.Context) {
 	var functions []models.Function
