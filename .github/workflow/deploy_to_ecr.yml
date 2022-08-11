@@ -4,6 +4,7 @@ on:
 
   push:
     branches: [ main ]
+    paths: [ app/** ]
 
 jobs:
 
@@ -11,6 +12,9 @@ jobs:
 
     name: Build Image
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
 
     steps:
 
