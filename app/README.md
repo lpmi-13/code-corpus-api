@@ -20,7 +20,7 @@ curl "localhost:8080/functions?language=python&page=10
 
 the GitHub action pushes a new image to ECR, so make sure you have a repo set up there, to get all the container image pushes. You'll also need to make sure that you add
 
-- `AWS_ACCESS_KEY`
+- `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
 to your repository secrets. For these credentials, you can create an IAM user and add an inline policy that allows only pushing images to ECR.
