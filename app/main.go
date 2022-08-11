@@ -20,5 +20,6 @@ func main() {
 	// this is just for a random function, we'll add specific language in a bit
 	r.GET("/function", controllers.FindRandomFunction)
 
-	r.Run()
+	// parameterize this by env (or something)
+	r.Run(":8080")
 }

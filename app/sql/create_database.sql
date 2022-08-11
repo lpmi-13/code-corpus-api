@@ -1,4 +1,4 @@
-CREATE DATABASE code;
+CREATE DATABASE code if not exists;
  
 CREATE USER codez WITH PASSWORD 'codez-control';
  
