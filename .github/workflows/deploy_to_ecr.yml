@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
     paths: [ app/** ]
+  # just because somebody might want to run it manually after cloning
+  # the repo but without modifying any code
+  workflow_dispatch:
 
 jobs:
 
