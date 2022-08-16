@@ -35,7 +35,8 @@ func FindFunctions(c *gin.Context) {
 func FindRandomFunction(c *gin.Context) {
 	var count int64
 	var function models.Function
-	models.DB.Model(&function).Where("language = ?", c.Query("language")).Count(&count)
+	// this is a particular materialized view that needs to be created
+	models.DB.Raw("SELECT count from language_counts WHERE language = ?", c.Query("language")).Find(&count)
 
 	randomInt := rand.Intn(int(count))
 	models.DB.Where("language = ?", c.Query("language")).Offset(randomInt).Limit(1).Find(&function)

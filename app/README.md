@@ -16,6 +16,8 @@ It will be queryable on the default port (8080).
 curl "localhost:8080/functions?language=python&page=10
 ```
 
+> Note: the random function endpoint relies on a materialized view called `language_counts` to get the count quickly, so if you're starting the database from scratch, make sure to create that with `CREATE MATERIALIZED VIEW language_counts AS select count(*), language FROM functions GROUP BY language;`
+
 ## CI
 
 the GitHub action pushes a new image to ECR, so make sure you have a repo set up there, to get all the container image pushes. You'll also need to make sure that you add
