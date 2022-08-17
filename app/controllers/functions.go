@@ -43,3 +43,8 @@ func FindRandomFunction(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": function})
 }
+
+// this is for integration with fargate health checks
+func HealthCheck(c *gin.Context) {
+	c.Writer.WriteHeader(200)
+}

@@ -20,6 +20,8 @@ func main() {
 	// this is just for a random function, we'll add specific language in a bit
 	r.GET("/function", controllers.FindRandomFunction)
 
+	// let fargate confirm the task is healthy
+	r.GET("/healthcheck", controllers.HealthCheck)
 	// parameterize this by env (or something)
 	r.Run(":8080")
 }
