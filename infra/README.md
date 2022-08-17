@@ -18,6 +18,8 @@ and then
 
 ## creating resources in AWS
 
+> NOTE: since you need to push an image to ECR before the api service can start up, follow the instructions in the [app README](../app/README.md) to run the workflow and push an image for fargate to find.
+
 when everything's ready, go ahead and run
 
 ```

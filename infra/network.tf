@@ -104,3 +104,15 @@ resource "aws_db_subnet_group" "db_subnet" {
 #resource "aws_route53_zone" "main" {
 #  name = "codecorpus.net"
 #}
+
+resource "aws_route53_record" "www" {
+  zone_id = var.hosted_zone_id
+  name    = "codecorpus.net"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.code-corpus-alb.dns_name
+    zone_id                = aws_lb.code-corpus-alb.zone_id
+    evaluate_target_health = true
+  }
+}
