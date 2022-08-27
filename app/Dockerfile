@@ -17,4 +17,4 @@ FROM scratch
 
 COPY --from=builder /code-corpus-api /code-corpus-api
 
-CMD ["/code-corpus-api"]
+CMD ["MODE=production DB_CONNECTION_STRING_SECRET=databaseConnection /code-corpus-api"]

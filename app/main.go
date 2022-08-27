@@ -5,11 +5,28 @@ import (
 	"code-corpus-api/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	// set the mode (ie, DEBUG or PRODUCTION) to be parameterized at startup
+
+	// don't bother overriding the mode when developing locally
+	viper.SetDefault("MODE", "dev")
+	viper.SetDefault("PORT", "8080")
+	// we only actually need this when the service is running in ECS
+	viper.SetDefault("DB_CONNECTION_STRING_SECRET", "DEFAULT")
+
+	viper.AutomaticEnv() // Automatically search for environment variables
+
+	mode := viper.Get("MODE")
+	if mode == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	port := viper.GetString("PORT")
+
 	r := gin.Default()
+	r.SetTrustedProxies(nil)
 
 	models.ConnectDatabase()
 
@@ -22,6 +39,6 @@ func main() {
 
 	// let fargate confirm the task is healthy
 	r.GET("/healthcheck", controllers.HealthCheck)
-	// parameterize this by env (or something)
-	r.Run(":8080")
+
+	r.Run(":" + port)
 }

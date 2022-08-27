@@ -4,13 +4,17 @@ This is the application code that listens for incoming requests, queries the dat
 
 ## Local development
 
-Make sure postgres is up and running, and ideally has some data in it. Then, start up the service:
+You can start up the docker-compose stack (which is basically just postgres), and then run the webserver manually (so you can stop/start it for code changes):
+
+> Putting in data can be done via the included script `invoke.py` after postgres is up. It should persist between container runs, so you'll only have to put data in there once.
 
 ```
 go run main.go controllers/ models/
 ```
 
-It will be queryable on the default port (8080).
+> If you feel like having the code reload on changes and like using node to run go, use `nodemon --exec go run main.go controllers/ models/ --signal SIGTERM`
+
+The application will be queryable on the default port (8080).
 
 ```
 curl "localhost:8080/functions?language=python&page=10

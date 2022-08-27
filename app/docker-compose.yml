@@ -8,25 +8,10 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    networks:
-      - default
+    network_mode: host
     ports:
       - '5432:5432'
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
       - ./sql/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
 
-  code-corpus-api:
-    build: ./
-    restart: always
-    networks:
-      - default
-    ports:
-      - '8080:8080'
-    depends_on:
-      - db
-
-networks:
-  default:
-    name: code-corpus-api
-    driver: bridge
