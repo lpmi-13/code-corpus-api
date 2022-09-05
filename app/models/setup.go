@@ -3,31 +3,50 @@ package models
 import (
 	"fmt"
 
-	"github.com/aws/aws-secretsmanager-caching-go/secretcache"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var (
-	DB             *gorm.DB
-	dsn            string
-	err            error
-	secretCache, _ = secretcache.New()
+	DB  *gorm.DB
+	dsn string
 )
 
 func ConnectDatabase() {
 
 	mode := viper.Get("MODE")
-	connectionString := viper.GetString("DB_CONNECTION_STRING_SECRET")
+	connectionSecretName := viper.GetString("DB_CONNECTION_STRING_SECRET")
 
 	if mode == "production" {
-		dsn, err = secretCache.GetSecretString(connectionString)
+		region := "eu-west-1"
+
+		//Create a Secrets Manager client
+		sess, err := session.NewSession()
 		if err != nil {
-			fmt.Println("couldn't get database connection secret string: ", err)
+			// Handle session creation error
+			fmt.Println(err.Error())
+			return
 		}
+		svc := secretsmanager.New(sess,
+			aws.NewConfig().WithRegion(region))
+		input := &secretsmanager.GetSecretValueInput{
+			SecretId:     aws.String(connectionSecretName),
+			VersionStage: aws.String("AWSCURRENT"), // VersionStage defaults to AWSCURRENT if unspecified
+		}
+
+		result, err := svc.GetSecretValue(input)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
+		dsn = *result.SecretString
+	} else {
+		dsn = "host=localhost user=codez password=codez-control dbname=code port=5432 sslmode=disable"
 	}
-	dsn = "host=localhost user=codez password=codez-control dbname=code port=5432 sslmode=disable"
 
 	database, err := gorm.Open(postgres.Open(dsn))
 

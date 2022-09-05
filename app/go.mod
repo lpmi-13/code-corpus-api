@@ -3,6 +3,7 @@ module code-corpus-api
 go 1.15
 
 require (
+	github.com/aws/aws-sdk-go v1.19.23
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.15.18 // indirect
 	github.com/aws/aws-secretsmanager-caching-go v1.1.0
 	github.com/gin-gonic/gin v1.8.1
