@@ -24,6 +24,7 @@ func ConnectDatabase() {
 	if mode == "production" {
 		region := "eu-west-1"
 
+		fmt.Println("starting new session...")
 		//Create a Secrets Manager client
 		sess, err := session.NewSession()
 		if err != nil {
@@ -38,12 +39,14 @@ func ConnectDatabase() {
 			VersionStage: aws.String("AWSCURRENT"), // VersionStage defaults to AWSCURRENT if unspecified
 		}
 
+		fmt.Println("getting secret value...")
 		result, err := svc.GetSecretValue(input)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 
 		dsn = *result.SecretString
+		fmt.Println("dsn set as: ", dsn)
 	} else {
 		dsn = "host=localhost user=codez password=codez-control dbname=code port=5432 sslmode=disable"
 	}
