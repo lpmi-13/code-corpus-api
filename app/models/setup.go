@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/spf13/viper"
@@ -23,17 +24,20 @@ func ConnectDatabase() {
 
 	if mode == "production" {
 		region := "eu-west-1"
+		// this is unfortunate hardcoding, but no obvious way to get it dynamically
+		role_arn := "arn:aws:iam::366325906679:role/ecs-execution-role"
 
 		fmt.Println("starting new session...")
-		//Create a Secrets Manager client
-		sess, err := session.NewSession()
-		if err != nil {
-			// Handle session creation error
-			fmt.Println(err.Error())
-			return
-		}
+
+		// create a session for the service to assume the role
+		sess := session.Must(session.NewSession())
+		creds := stscreds.NewCredentials(sess, role_arn)
+
 		svc := secretsmanager.New(sess,
-			aws.NewConfig().WithRegion(region))
+			&aws.Config{
+				Credentials: creds,
+				Region:      &region,
+			})
 		input := &secretsmanager.GetSecretValueInput{
 			SecretId:     aws.String(connectionSecretName),
 			VersionStage: aws.String("AWSCURRENT"), // VersionStage defaults to AWSCURRENT if unspecified
