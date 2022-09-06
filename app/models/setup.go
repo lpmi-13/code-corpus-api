@@ -25,7 +25,7 @@ func ConnectDatabase() {
 	if mode == "production" {
 		region := "eu-west-1"
 		// this is unfortunate hardcoding, but no obvious way to get it dynamically
-		role_arn := "arn:aws:iam::366325906679:role/ecs-execution-role"
+		role_arn := "arn:aws:iam::366325906679:role/ecs-task-role"
 
 		fmt.Println("starting new session...")
 
