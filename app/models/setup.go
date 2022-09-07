@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,6 +17,10 @@ var (
 	DB  *gorm.DB
 	dsn string
 )
+
+type SecretString struct {
+	ConnectionString string
+}
 
 func ConnectDatabase() {
 
@@ -49,7 +54,10 @@ func ConnectDatabase() {
 			fmt.Println(err.Error())
 		}
 
-		dsn = *result.SecretString
+		var connectionString string
+		json.Unmarshal([]byte(*result.SecretString), &connectionString)
+
+		dsn = connectionString
 		fmt.Println("dsn set as: ", dsn)
 	} else {
 		dsn = "host=localhost user=codez password=codez-control dbname=code port=5432 sslmode=disable"
