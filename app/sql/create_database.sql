@@ -1,6 +1,6 @@
 CREATE DATABASE code;
  
-CREATE USER codez WITH PASSWORD 'codez-control';
+CREATE USER codez WITH PASSWORD 'codezcontrol';
  
 ALTER ROLE codez SET client_encoding TO 'utf8';
 ALTER ROLE codez SET default_transaction_isolation TO 'read committed';
