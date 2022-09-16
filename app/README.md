@@ -20,7 +20,7 @@ The application will be queryable on the default port (8080).
 curl "localhost:8080/functions?language=python&page=10
 ```
 
-> Note: the random function endpoint relies on a materialized view called `language_counts` to get the count quickly, so if you're starting the database from scratch, make sure to create that with `CREATE MATERIALIZED VIEW language_counts AS select count(*), language FROM functions GROUP BY language;`
+> Note: the random function endpoint relies on a materialized view called `language_counts` to get the count quickly, so if you're starting the database from scratch, make sure to create that with `psql -h localhost -U $DB_USER -d $DATABASE -f ~/create_materialized_view.sql`
 
 ## CI
 
@@ -32,3 +32,9 @@ the GitHub action pushes a new image to ECR, so make sure you have a repo set up
 to your repository secrets. For these credentials, you can create an IAM user and add an inline policy that allows only pushing images to ECR.
 
 This is currently set up to only fire when there is an explicit change to any file in the `./app` directory.
+
+## Integration with the code in the "infra/" directory
+
+The decision to keep both the application code and the infrastructure code in the same repo was to make it easier to access the sql creation scripts and the data injection script (both in this repo) from the other directory when setting things up.
+
+The `sql/create_database.sql`, `sql/create_materialized_view.sql` and `inject.py` are used while testing locally as well as setting up the production service.

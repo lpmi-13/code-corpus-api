@@ -12,7 +12,7 @@ import (
 
 // as a general note, we probably also want some checking about whether
 // the params passed are valid (eg, not negative or random chars),
-// and we can add tests for that first, then implement that checks
+// and we can add tests for that first, then implement those checks
 
 // limit this to first 10 functions per language
 func FindFunctions(c *gin.Context) {
@@ -33,13 +33,14 @@ func FindFunctions(c *gin.Context) {
 
 // find one function from a specific language
 func FindRandomFunction(c *gin.Context) {
+	language := c.DefaultQuery("language", "javascript")
 	var count int64
 	var function models.Function
 	// this is a particular materialized view that needs to be created
-	models.DB.Raw("SELECT count from language_counts WHERE language = ?", c.Query("language")).Find(&count)
+	models.DB.Raw("SELECT count from language_counts WHERE language = ?", language).Find(&count)
 
 	randomInt := rand.Intn(int(count))
-	models.DB.Where("language = ?", c.Query("language")).Offset(randomInt).Limit(1).Find(&function)
+	models.DB.Where("language = ?", language).Offset(randomInt).Limit(1).Find(&function)
 
 	c.JSON(http.StatusOK, gin.H{"data": function})
 }
