@@ -20,29 +20,52 @@ func FindFunctions(c *gin.Context) {
 	language := c.DefaultQuery("language", "javascript")
 	page := c.DefaultQuery("page", "1")
 
-	fmt.Println(page)
 	pagination, err := strconv.Atoi(page)
 	if err != nil {
 		fmt.Printf("error is: %v", err)
 	}
 
-	models.DB.Where("language = ?", language).Offset(pagination * 10).Limit(10).Find(&functions)
+	languageList := []string{"golang", "javascript", "python", "typescript"}
 
-	c.JSON(http.StatusOK, gin.H{"data": functions})
+	if allowedLanguage(languageList, language) {
+
+		models.DB.Where("language = ?", language).Offset(pagination * 10).Limit(10).Find(&functions)
+
+		c.JSON(http.StatusOK, gin.H{"data": functions})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{"data": "this language not available or doesn't exist"})
+	}
+}
+
+func allowedLanguage(s []string, language string) bool {
+	for _, v := range s {
+		if v == language {
+			return true
+		}
+	}
+	return false
 }
 
 // find one function from a specific language
 func FindRandomFunction(c *gin.Context) {
+
+	languageList := []string{"golang", "javascript", "python", "typescript"}
+
 	language := c.DefaultQuery("language", "javascript")
-	var count int64
-	var function models.Function
-	// this is a particular materialized view that needs to be created
-	models.DB.Raw("SELECT count from language_counts WHERE language = ?", language).Find(&count)
 
-	randomInt := rand.Intn(int(count))
-	models.DB.Where("language = ?", language).Offset(randomInt).Limit(1).Find(&function)
+	if allowedLanguage(languageList, language) {
+		var count int64
+		var function models.Function
+		// this is a particular materialized view that needs to be created
+		models.DB.Raw("SELECT count from language_counts WHERE language = ?", language).Find(&count)
 
-	c.JSON(http.StatusOK, gin.H{"data": function})
+		randomInt := rand.Intn(int(count))
+		models.DB.Where("language = ?", language).Offset(randomInt).Limit(1).Find(&function)
+
+		c.JSON(http.StatusOK, gin.H{"data": function})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{"data": "this language not available or doesn't exist"})
+	}
 }
 
 // this is for integration with fargate health checks
