@@ -17,6 +17,7 @@ import (
 // this list is to allow us to return a sensible 404 response if the user tries
 // to pass a language that we don't have a response for
 var languageList = []string{"golang", "javascript", "python", "typescript"}
+
 var RESULTS_PER_PAGE int = 10
 
 func allowedLanguage(s []string, language string) bool {
