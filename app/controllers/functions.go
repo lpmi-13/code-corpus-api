@@ -14,28 +14,10 @@ import (
 // the params passed are valid (eg, not negative or random chars),
 // and we can add tests for that first, then implement those checks
 
-// limit this to first 10 functions per language
-func FindFunctions(c *gin.Context) {
-	var functions []models.Function
-	language := c.DefaultQuery("language", "javascript")
-	page := c.DefaultQuery("page", "1")
-
-	pagination, err := strconv.Atoi(page)
-	if err != nil {
-		fmt.Printf("error is: %v", err)
-	}
-
-	languageList := []string{"golang", "javascript", "python", "typescript"}
-
-	if allowedLanguage(languageList, language) {
-
-		models.DB.Where("language = ?", language).Offset(pagination * 10).Limit(10).Find(&functions)
-
-		c.JSON(http.StatusOK, gin.H{"data": functions})
-	} else {
-		c.JSON(http.StatusNotFound, gin.H{"data": "this language not available or doesn't exist"})
-	}
-}
+// this list is to allow us to return a sensible 404 response if the user tries
+// to pass a language that we don't have a response for
+var languageList = []string{"golang", "javascript", "python", "typescript"}
+var RESULTS_PER_PAGE int = 10
 
 func allowedLanguage(s []string, language string) bool {
 	for _, v := range s {
@@ -46,10 +28,28 @@ func allowedLanguage(s []string, language string) bool {
 	return false
 }
 
+func FindFunctions(c *gin.Context) {
+	var functions []models.Function
+	language := c.DefaultQuery("language", "javascript")
+	page := c.DefaultQuery("page", "1")
+
+	pagination, err := strconv.Atoi(page)
+	if err != nil {
+		fmt.Printf("error is: %v", err)
+	}
+
+	if allowedLanguage(languageList, language) {
+
+		models.DB.Where("language = ?", language).Offset(pagination * RESULTS_PER_PAGE).Limit(RESULTS_PER_PAGE).Find(&functions)
+
+		c.JSON(http.StatusOK, gin.H{"data": functions})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{"data": "this language not available or doesn't exist"})
+	}
+}
+
 // find one function from a specific language
 func FindRandomFunction(c *gin.Context) {
-
-	languageList := []string{"golang", "javascript", "python", "typescript"}
 
 	language := c.DefaultQuery("language", "javascript")
 
