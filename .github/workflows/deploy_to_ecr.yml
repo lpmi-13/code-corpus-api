@@ -1,4 +1,4 @@
-name: Deploy to ECR
+name: Test and Deploy to ECR
 
 on:
   push:
@@ -22,6 +22,10 @@ jobs:
 
     - name: Check out code
       uses: actions/checkout@v2
+
+    - name: Run tests
+      run: |
+        go test ./test 
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
