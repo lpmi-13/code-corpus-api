@@ -58,7 +58,6 @@ func ConnectDatabase() {
 		json.Unmarshal([]byte(*result.SecretString), &connectionString)
 
 		dsn = connectionString.ConnectionString
-		fmt.Println("dsn set as: ", dsn)
 	} else {
 		dsn = "host=localhost user=codez password=codez-control dbname=code port=5432 sslmode=disable"
 	}
