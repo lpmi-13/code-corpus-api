@@ -13,6 +13,32 @@ Initially, it will only return functions, since that's the first thing I'm creat
 
 ![Initial system design](./system_design.svg)
 
+## Separation of frontend and backend
+
+There will be a frontend landing page at the bare domain (`https://codecorpus.net`), along with possibly a swagger spec, and then the actual API will live at a subdomain like `https://api.codecorpus.net` with path/query based routing to particular handlers.
+
+## Operational components
+
+These are going to be in a different repo, since they're things that I'm personally interested in, and not strictly necessary to get this particular API up and running:
+
+- Monitoring
+
+Some sort of prometheus instrumentation of the application itself, along with ELB metrics, either via cloudwatch directly or some sort of exporter. Maybe something like https://promcat.io/apps/aws-elb.
+
+We definitely want Latency, Traffic, and Errors.
+
+- Dashboards
+
+Definitely grafana, but just need to decide on a data source. Probably prometheus with optional other stuff.
+
+- Logging
+
+This could be something like a full ELK stack, but might end up being a bit slimmer, depending on cost and what's easy to implement.
+
+- Security
+
+Depending on how much of a rabbit-hole it ends up being, I might also look into some fuzzing in CI (don't really have a staging environment, so that's probably the best we can do for now).
+
 ## Things the API will return
 
 > (this will eventually be a swagger spec or something, but for now just writing down thoughts)
@@ -63,6 +89,8 @@ ID | URL
 ```
 
 ### code
+
+> This is the only table that currently exists, but we might set up other ones, as above, depending on what features we decide to implement.
 
 ```
 ID | language | repo | number_of_lines | code
