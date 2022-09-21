@@ -6,9 +6,9 @@
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-region": "${aws_region}",
+        "awslogs-region": "${region}",
         "awslogs-stream-prefix": "code-corpus-api-service",
-        "awslogs-group": "awslogs-code-corpus-api"
+        "awslogs-group": "${log_group}"
       }
     },
     "portMappings": [
@@ -21,8 +21,12 @@
     "cpu": 1,
     "environment": [
       {
-        "name": "GIN_MODE",
-        "value": "release"
+        "name": "MODE",
+        "value": "production"
+      },
+      {
+        "name": "DB_CONNECTION_STRING_SECRET",
+        "value": "DatabaseConnectionString"
       },
       {
         "name": "PORT",

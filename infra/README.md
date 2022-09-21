@@ -32,15 +32,35 @@ That should create everything you need, and you'll see the public IP of the new 
 
 ## Post-create actions
 
-for the moment, we're still installing postgresql client tooling manually, but we can probably put this in user data or something:
+now you should be able to hit the api and get back some functions:
 
 ```
-sudo apt install -y postgresql-client
-```
+curl --silent 'https://DOMAIN/function?language=golang' | jq .
 
-you can use the endpoint for the RDS to connect to the database from the bastion and check what databases exist.
+{
+  "data": {
+    "ID": 3841,
+    "CreatedAt": "0001-01-01T00:00:00Z",
+    "UpdatedAt": "0001-01-01T00:00:00Z",
+    "DeletedAt": null,
+    "language": "golang",
+    "repo": "https://github.com/repositories/hybridgroup/gocv",
+    "numberOfLines": 3,
+    "code": [
+      {
+        "line_number": 1,
+        "line_content": "func (m *Mat) MultiplyFloat(val float32) {"
+      },
+      {
+        "line_number": 2,
+        "line_content": "\tC.Mat_MultiplyFloat(m.p, C.float(val))"
+      },
+      {
+        "line_number": 3,
+        "line_content": "}"
+      }
+    ]
+  }
+}
 
-(for example)
-```
-psql -h api-datastore.cjzeg4bvhcx2.eu-west-1.rds.amazonaws.com -U CHANGE_ME -l
 ```
