@@ -18,7 +18,7 @@
         "protocol": "tcp"
       }
     ],
-    "cpu": ".5",
+    "cpu": 1,
     "environment": [
       {
         "name": "MODE",
@@ -41,7 +41,7 @@
       }
     ],
     "mountPoints": [],
-    "memory": 1024,
+    "memory": 2048,
     "volumesFrom": []
   }
 ]
