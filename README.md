@@ -43,13 +43,21 @@ Depending on how much of a rabbit-hole it ends up being, I might also look into 
 
 > (this will eventually be a swagger spec or something, but for now just writing down thoughts)
 
+
+### Implemented
+
 - one random function for a particular language
-- N random functions for a particular language (probably cap at 10 or something)
+- N functions for a particular language (This is going to use pagination...and the "next" token isn't implemented yet)
+
+
+### Not yet implemented
+
 - list of repos for a given language (paginate this)
 - one random function for a particular repo
 
 Considerations for different "filters" on the query:
 
+- filter functions by number of lines (probably both `maxLines` and `minLines`)
 - filter functions by "difficulty" (we'll probably have to just use number of lines here, though an eventual analysis of the actual corpus could help us figure out a better metric)
 - filter functions by "internal criteria", for example whether the function contains a particular control flow like `if` blocks, or whether it has a return value or not. This is aspirational for the time being, since the currently data collection method doesn't annotate functions with any of this information.
 
