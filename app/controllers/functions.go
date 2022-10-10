@@ -18,7 +18,7 @@ import (
 // to pass a language that we don't have a response for
 var languageList = []string{"golang", "javascript", "python", "typescript"}
 
-var RESULTS_PER_PAGE int = 10
+var resultsPerPage int = 10
 
 func allowedLanguage(s []string, language string) bool {
 	for _, v := range s {
@@ -29,6 +29,7 @@ func allowedLanguage(s []string, language string) bool {
 	return false
 }
 
+// FindFunctions a set of functions from a specific language
 func FindFunctions(c *gin.Context) {
 	var functions []models.Function
 	language := c.DefaultQuery("language", "javascript")
@@ -41,7 +42,7 @@ func FindFunctions(c *gin.Context) {
 
 	if allowedLanguage(languageList, language) {
 
-		models.DB.Where("language = ?", language).Offset(pagination * RESULTS_PER_PAGE).Limit(RESULTS_PER_PAGE).Find(&functions)
+		models.DB.Where("language = ?", language).Offset(pagination * resultsPerPage).Limit(resultsPerPage).Find(&functions)
 
 		c.JSON(http.StatusOK, gin.H{"data": functions})
 	} else {
@@ -49,7 +50,7 @@ func FindFunctions(c *gin.Context) {
 	}
 }
 
-// find one function from a specific language
+// FindRandomFunction find one function from a specific language
 func FindRandomFunction(c *gin.Context) {
 
 	language := c.DefaultQuery("language", "javascript")
@@ -69,7 +70,7 @@ func FindRandomFunction(c *gin.Context) {
 	}
 }
 
-// this is for integration with fargate health checks
+// HealthCheck this is for integration with fargate health checks
 func HealthCheck(c *gin.Context) {
 	c.Writer.WriteHeader(200)
 }

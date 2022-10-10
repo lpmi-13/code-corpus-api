@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Function holds the data for one particular function result
 type Function struct {
 	gorm.Model
 	Language string `json:"language"`

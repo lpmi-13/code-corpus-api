@@ -14,14 +14,16 @@ import (
 )
 
 var (
+	// DB the main instance of the database
 	DB  *gorm.DB
 	dsn string
 )
 
-type SecretString struct {
+type secretString struct {
 	ConnectionString string
 }
 
+// ConnectDatabase sets the connection on the DB
 func ConnectDatabase() {
 
 	mode := viper.Get("MODE")
@@ -30,13 +32,13 @@ func ConnectDatabase() {
 	if mode == "production" {
 		region := "eu-west-1"
 		// this is unfortunate hardcoding, but no obvious way to get it dynamically
-		role_arn := "arn:aws:iam::366325906679:role/ecs-task-role"
+		roleArn := "arn:aws:iam::366325906679:role/ecs-task-role"
 
 		fmt.Println("starting new session...")
 
 		// create a session for the service to assume the role
 		sess := session.Must(session.NewSession())
-		creds := stscreds.NewCredentials(sess, role_arn)
+		creds := stscreds.NewCredentials(sess, roleArn)
 
 		svc := secretsmanager.New(sess,
 			&aws.Config{
@@ -54,8 +56,11 @@ func ConnectDatabase() {
 			fmt.Println(err.Error())
 		}
 
-		var connectionString SecretString
-		json.Unmarshal([]byte(*result.SecretString), &connectionString)
+		var connectionString secretString
+		err = json.Unmarshal([]byte(*result.SecretString), &connectionString)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		dsn = connectionString.ConnectionString
 	} else {
@@ -69,7 +74,10 @@ func ConnectDatabase() {
 		panic("failed to connect to database")
 	}
 
-	database.AutoMigrate(&Function{})
+	err = database.AutoMigrate(&Function{})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	DB = database
 }
