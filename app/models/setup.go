@@ -25,11 +25,9 @@ type secretString struct {
 
 // ConnectDatabase sets the connection on the DB
 func ConnectDatabase() {
-
-	mode := viper.Get("MODE")
 	connectionSecretName := viper.GetString("DB_CONNECTION_STRING_SECRET")
 
-	if mode == "production" {
+	if mode := viper.Get("MODE"); mode == "production" {
 		region := "eu-west-1"
 		// this is unfortunate hardcoding, but no obvious way to get it dynamically
 		roleArn := "arn:aws:iam::366325906679:role/ecs-task-role"
@@ -51,12 +49,14 @@ func ConnectDatabase() {
 		}
 
 		fmt.Println("getting secret value...")
+
 		result, err := svc.GetSecretValue(input)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 
 		var connectionString secretString
+
 		err = json.Unmarshal([]byte(*result.SecretString), &connectionString)
 		if err != nil {
 			fmt.Println(err)
@@ -68,7 +68,6 @@ func ConnectDatabase() {
 	}
 
 	database, err := gorm.Open(postgres.Open(dsn))
-
 	if err != nil {
 		fmt.Println("the problem is: ", err)
 		panic("failed to connect to database")
