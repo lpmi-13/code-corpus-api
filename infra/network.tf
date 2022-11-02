@@ -26,7 +26,7 @@ resource "aws_route_table_association" "bastion-route-table" {
 }
 
 resource "aws_main_route_table_association" "internet-ingress" {
-  vpc_id = aws_vpc.code-corpus-api.id
+  vpc_id         = aws_vpc.code-corpus-api.id
   route_table_id = aws_route_table.public.id
 }
 
@@ -34,7 +34,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.code-corpus-api.id
 
   route {
-    cidr_block =  "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.ig.id
   }
 
@@ -100,50 +100,4 @@ resource "aws_db_subnet_group" "db_subnet" {
   tags = {
     Name = "api_db_subnet"
   }
-}
-
-// this will probably end up being a subdomain like
-// api.codecorpus.net
-resource "aws_route53_record" "www" {
-  zone_id = var.hosted_zone_id
-  name    = var.domain_for_certificate
-  type    = "A"
-  allow_overwrite = true
-
-  alias {
-    name                   = aws_lb.code-corpus-alb.dns_name
-    zone_id                = aws_lb.code-corpus-alb.zone_id
-    evaluate_target_health = false
-  }
-
-  provider = aws
-}
-
-// this second record is what makes it validate correctly
-resource "aws_route53_record" "cert_validation" {
-  allow_overwrite = true
-  name            = tolist(aws_acm_certificate.code-corpus-cert.domain_validation_options)[0].resource_record_name
-  records         = [ tolist(aws_acm_certificate.code-corpus-cert.domain_validation_options)[0].resource_record_value ]
-  type            = tolist(aws_acm_certificate.code-corpus-cert.domain_validation_options)[0].resource_record_type
-  zone_id  = var.hosted_zone_id
-  ttl      = 30
-  provider = aws
-}
-
-resource "aws_acm_certificate" "code-corpus-cert" {
-  domain_name       = aws_route53_record.www.fqdn
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = {
-    Name = "certificate for ${var.domain_for_certificate}"
-  }
-}
-
-resource "aws_acm_certificate_validation" "cert" {
-  certificate_arn = aws_acm_certificate.code-corpus-cert.arn
-  validation_record_fqdns = [ aws_route53_record.cert_validation.fqdn ]
 }
