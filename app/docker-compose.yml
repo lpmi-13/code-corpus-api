@@ -1,20 +1,19 @@
-version: '3.9'
+version: "3.9"
 
 services:
-
-  db:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - DATABASE_NAME=code
-      - USER=codez
-      - USER_PASSWORD=codezcontrol
-    network_mode: host
-    ports:
-      - '5432:5432'
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-      - ./sql/create_database.sh:/docker-entrypoint-initdb.d/create_database.sh
-
+    db:
+        image: postgres:14.1-alpine
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - DATABASE_NAME=code
+            - USER=codez
+            - USER_PASSWORD=codezcontrol
+        network_mode: host
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./postgres_data:/var/lib/postgresql/data
+            - ./sql/create_database.sh:/docker-entrypoint-initdb.d/create_database.sh
+            - ./sql/create_table.sh:/docker-entrypoint-initdb.d/create_table.sh

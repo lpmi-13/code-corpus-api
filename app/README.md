@@ -2,11 +2,19 @@
 
 This is the application code that listens for incoming requests, queries the database and returns the results.
 
+This has some open telemetry set up, so if you'd like to do that, follow the instructions at https://docs.honeycomb.io/getting-data-in/opentelemetry/go-distro/
+
+...otherwise, there _will probably_ be some way to disable this when running locally
+
 ## Local development
 
-You can start up the docker-compose stack (which is basically just postgres), and then run the webserver manually (so you can stop/start it for code changes):
+1. You can start up the docker-compose stack (which is basically just postgres), and then run the webserver manually (so you can stop/start it for code changes). The scripts to create the database and table are both specified in the compose file, so that should be all set up once the postgres container is up and running.
 
-> Putting in data can be done via the included script `invoke.py` after postgres is up. It should persist between container runs, so you'll only have to put data in there once.
+2. After that, put in data via the included script `invoke.py`. It should persist between container runs, so you'll only have to put data in there once.
+
+3. Finally, the random function endpoint relies on a materialized view called `language_counts` to get the count quickly, so if you're starting the database from scratch, make sure to create that with `psql -h localhost -U $DB_USER -d $DATABASE -f ~/create_materialized_view.sql`.
+
+4. When that's all done, you should be able to start the application (I kept it out of the compose stack to allow restarts on code changes):
 
 ```
 go run main.go controllers/ models/
@@ -20,14 +28,12 @@ The application will be queryable on the default port (8080).
 curl "localhost:8080/functions?language=python&page=10
 ```
 
-> Note: the random function endpoint relies on a materialized view called `language_counts` to get the count quickly, so if you're starting the database from scratch, make sure to create that with `psql -h localhost -U $DB_USER -d $DATABASE -f ~/create_materialized_view.sql`
-
 ## CI
 
 the GitHub action pushes a new image to ECR, so make sure you have a repo set up there, to get all the container image pushes. You'll also need to make sure that you add
 
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
+-   `AWS_ACCESS_KEY_ID`
+-   `AWS_SECRET_ACCESS_KEY`
 
 to your repository secrets. For these credentials, you can create an IAM user and add an inline policy that allows only pushing images to ECR.
 

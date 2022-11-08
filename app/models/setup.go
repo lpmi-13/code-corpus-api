@@ -73,10 +73,5 @@ func ConnectDatabase() {
 		panic("failed to connect to database")
 	}
 
-	err = database.AutoMigrate(&Function{})
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	DB = database
 }
