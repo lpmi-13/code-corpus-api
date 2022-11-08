@@ -8,6 +8,8 @@ resource "null_resource" "bastion_setup" {
 
   // first we copy the sql script to the bastion so we can run it
   // from there after we set up the psql command line utility
+  // and finally replace all the vars in the shell script so we can run
+  // it directly via psql
   provisioner "local-exec" {
     command = <<EOF
       scp -i terraform.ed25519 \
@@ -20,13 +22,21 @@ resource "null_resource" "bastion_setup" {
       ubuntu@"$BASTION_IP" -C \
         "sudo apt update -y && \
         sudo apt install postgresql postgresql-contrib -y && \
-      PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d postgres -f ~/create_database.sql"
+        sed -i 's/DATABASE_NAME/'$DATABASE_NAME'/g' ~/create_database.sql && \
+        sed -i 's/DATABASE_USER/'$DATABASE_USER'/g' ~/create_database.sql && \
+        sed -i 's/USER_PASSWORD/'$USER_PASSWORD'/g' ~/create_database.sql && \
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d postgres -f ~/create_database.sql"
     EOF 
     environment = {
       BASTION_IP = aws_instance.bastion-host.public_ip
-      DB_HOST = aws_db_instance.api-datastore.address
-      DB_PASSWORD = random_password.password.result
-      DB_USER = var.db_username
+      DB_HOST    = aws_db_instance.api-datastore.address
+      # DB_PASSWORD = random_password.password.result
+      DB_PASSWORD = var.db_password
+      DB_USER     = var.db_username
+      # the final three vars are used in the create_database.sql script
+      USER_PASSWORD = var.functions_db_password
+      DATABASE_USER = var.functions_db_username
+      DATABASE_NAME = var.functions_db_database
     }
     interpreter = ["bash", "-c"]
   }
@@ -43,11 +53,11 @@ resource "null_resource" "data_loading" {
   provisioner "local-exec" {
     command = <<EOF
       scp -i terraform.ed25519 \
-      -o StrictHostKeyChecking=no \
-      -o UserKnownHostsFile=/dev/null \
-      ../app/inject.py \
-      ../app/test-data/{javascript,typescript,python,golang}.json \
-      ../app/sql/create_materialized_view.sql ubuntu@"$BASTION_IP":~/ && \
+        -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        ../app/inject.py \
+        ../app/test-data/{javascript,typescript,python,golang}.json \
+        ../app/sql/create_materialized_view.sql ubuntu@"$BASTION_IP":~/ && \
       ssh -i terraform.ed25519 \
       -o StrictHostKeyChecking=no \
       -o UserKnownHostsFile=/dev/null \
@@ -61,11 +71,11 @@ resource "null_resource" "data_loading" {
         PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DATABASE -f ~/create_materialized_view.sql"
     EOF 
     environment = {
-      BASTION_IP = aws_instance.bastion-host.public_ip
-      DB_HOST = aws_db_instance.api-datastore.address
+      BASTION_IP  = aws_instance.bastion-host.public_ip
+      DB_HOST     = aws_db_instance.api-datastore.address
       DB_PASSWORD = var.functions_db_password
-      DB_USER = var.functions_db_username
-      DATABASE = var.functions_db_database
+      DB_USER     = var.functions_db_username
+      DATABASE    = var.functions_db_database
     }
     interpreter = ["bash", "-c"]
   }

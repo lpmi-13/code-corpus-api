@@ -7,7 +7,7 @@ resource "aws_route53_zone" "zone_api" {
   name    = "api.${var.apex_domain_for_certificate}"
   comment = "Hosted Zone for api.${var.apex_domain_for_certificate}"
 
-  tags {
+  tags = {
     Name   = "api.${var.apex_domain_for_certificate}"
     Origin = "terraform"
   }
@@ -15,11 +15,19 @@ resource "aws_route53_zone" "zone_api" {
 
 # Record in the apex hosted zone that contains the name servers of the api subdomain hosted zone
 resource "aws_route53_record" "ns_record_api" {
+  depends_on = [
+    aws_route53_zone.zone_api
+  ]
   type    = "NS"
   zone_id = var.apex_hosted_zone_id
   name    = "api"
   ttl     = "86400"
-  records = ["${aws_route53_zone.zone_api.name_servers}"]
+  records = [
+    aws_route53_zone.zone_api.name_servers[0],
+    aws_route53_zone.zone_api.name_servers[1],
+    aws_route53_zone.zone_api.name_servers[2],
+    aws_route53_zone.zone_api.name_servers[3],
+  ]
 }
 
 

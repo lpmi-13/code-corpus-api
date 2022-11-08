@@ -22,13 +22,13 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-   type = "redirect"
+    type = "redirect"
 
-   redirect {
-     port        = 443
-     protocol    = "HTTPS"
-     status_code = "HTTP_301"
-   }
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -37,11 +37,11 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
 
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate_validation.cert.certificate_arn
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
 
   depends_on = [
-    aws_route53_record.www
+    aws_route53_record.api
   ]
 
   default_action {
@@ -79,14 +79,14 @@ resource "aws_db_instance" "api-datastore" {
   identifier                  = "api-datastore"
   db_subnet_group_name        = aws_db_subnet_group.db_subnet.name
   username                    = var.db_username
-  password                    = random_password.password.result
-  vpc_security_group_ids      = [
+  password                    = var.db_password
+  vpc_security_group_ids = [
     aws_security_group.rds-instance-bastion.id,
     aws_security_group.rds-instance-ecs.id
-    ]
+  ]
   # when you're ready to go to production, uncomment this
   # deletion_protection         = true
-  skip_final_snapshot         = true
+  skip_final_snapshot = true
 }
 
 resource "aws_network_interface" "bastion-interface" {
